@@ -188,11 +188,11 @@ void InputSimulator::SendMouse(MouseClick Click)
 
 	ZeroMemory(&ip, sizeof(ip));
 
-	POINT CursorPos;
-	GetCursorPos(&CursorPos);
+	//POINT CursorPos;
+	//GetCursorPos(&CursorPos);
 	Sleep(1);
-	SetCursorPos(700, 500);
-	Sleep(1);
+	//SetCursorPos(700, 500);
+	//Sleep(1);
 	ip.type = INPUT_MOUSE;
 	ip.mi.dx = 0;
 	ip.mi.dy = 0;
@@ -227,8 +227,8 @@ void InputSimulator::SendMouse(MouseClick Click)
 	}
 	SendInput(1, &ip, sizeof(INPUT));
 	Sleep(1);
-	SetCursorPos(CursorPos.x, CursorPos.y);
-	Sleep(1);
+	//SetCursorPos(CursorPos.x, CursorPos.y);
+	//Sleep(1);
 
 	if (Click == Left)//hold force stand still
 	{
