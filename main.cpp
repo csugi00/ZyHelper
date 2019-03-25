@@ -264,10 +264,22 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 		{
 			//Land of the Dead
 			bool CastLotd = tcp_connection.CastLotd();
-			if (CastLotd && LotdCheck)
+			bool RiftJustStarted = tcp_connection.RiftJustStarted();
+			if (SecondSim)
 			{
-				input_simulator.SendKeyOrMouse(LotdHotkey);
-				Sleep(100);
+				if (CastLotd && LotdCheck && !RiftJustStarted)
+				{
+					input_simulator.SendKeyOrMouse(LotdHotkey);
+					Sleep(100);
+				}
+			}
+			else
+			{
+				if (CastLotd && LotdCheck)
+				{
+					input_simulator.SendKeyOrMouse(LotdHotkey);
+					Sleep(100);
+				}
 			}
 
 			//Bone Armor
