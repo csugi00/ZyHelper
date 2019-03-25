@@ -41,7 +41,7 @@ On Necro:
 
 If there is an elite within 70 yards Mages only autocast if you actually target the elite. 
 
-SecondSim casts simulacrum 10s into the rift.
+SecondSim casts simulacrum and land of the dead 10s into the rift.
 
 Press F10 to pause the helper entirely (turns off all autocasts and disables the mage macro). You can press F10 again to resume.
 
