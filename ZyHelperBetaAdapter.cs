@@ -43,7 +43,7 @@ namespace Turbo.Plugins.Zy
                 TextFunc = textFunc,
             };
 
-            HotKey = Key.F11;
+            HotKey = Key.F7;
             Show = false;
             Font = Hud.Render.CreateFont("tahoma", 8, 255, 146, 99, 6, true, false, false);
             textBuilder = new StringBuilder();
@@ -713,6 +713,8 @@ namespace Turbo.Plugins.Zy
                 Active = Active && (Hud.Game.Me.AnimationState != AcdAnimationState.CastingPortal && Hud.Game.Me.AnimationState != AcdAnimationState.Dead);
                 Active = Active && (Hud.Game.SpecialArea == SpecialArea.Rift || Hud.Game.SpecialArea == SpecialArea.GreaterRift);
 
+                textBuilder.AppendFormat("RiftJustStarted: {0}", RiftJustStarted);
+                textBuilder.AppendLine();
                 textBuilder.AppendFormat("IsInGame: {0}", Hud.Game.IsInGame);
                 textBuilder.AppendLine();
                 textBuilder.AppendFormat("IsPaused: {0}", Hud.Game.IsPaused);
