@@ -342,20 +342,20 @@ void InputSimulator::MoveMouse()
 	ip.type = INPUT_MOUSE;
 	ip.mi.dx = 0;
 	ip.mi.dy = 0;
-	ip.mi.mouseData = 0;
+	ip.mi.mouseData = WHEEL_DELTA;
 	ip.mi.time = 0;
 	ip.mi.dwExtraInfo = 0;
-		ip.mi.dwFlags = MOUSEEVENTF_MIDDLEDOWN;
+	ip.mi.dwFlags = MOUSEEVENTF_WHEEL;
 	SendInput(1, &ip, sizeof(INPUT));
 
 	Sleep(1);
 	ip.type = INPUT_MOUSE;
 	ip.mi.dx = 0;
 	ip.mi.dy = 0;
-	ip.mi.mouseData = 0;
+	ip.mi.mouseData = WHEEL_DELTA;
 	ip.mi.time = 0;
 	ip.mi.dwExtraInfo = 0;
-		ip.mi.dwFlags = MOUSEEVENTF_MIDDLEUP;
+	ip.mi.dwFlags = MOUSEEVENTF_WHEEL;
 	SendInput(1, &ip, sizeof(INPUT));
 	////////////////////////////////////////////////
 	Sleep(1);
