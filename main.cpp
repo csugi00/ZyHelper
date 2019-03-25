@@ -310,7 +310,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 
 			//Similacrum
 			bool CastSim = tcp_connection.CastSim();
-			bool RiftJustStarted = tcp_connection.RiftJustStarted();
+			RiftJustStarted = tcp_connection.RiftJustStarted();
 			if (SecondSim)
 			{
 				if (CastSim && SimCheck && !RiftJustStarted)
