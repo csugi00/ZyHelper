@@ -17,6 +17,9 @@ int InputSimulator::CharToVK(wchar_t input)
 {
 	switch (input)
 	{
+	case '0':
+		return 0x30;
+		break;
 	case '1':
 		return 0x31;
 		break;
