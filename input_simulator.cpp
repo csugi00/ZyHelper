@@ -300,7 +300,7 @@ void InputSimulator::SendMouseWithoutMove(MouseClick Click)
 
 void InputSimulator::MoveMouse()
 {
-	if (GetAsyncKeyState(CharToVK('6'))) return;
+	if (GetAsyncKeyState(CharToVK('7'))) return;
 
 	INPUT ip;
 
