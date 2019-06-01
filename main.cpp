@@ -35,7 +35,7 @@ DWORD CDiabloCalcFancyDlg::StartTcpConnectionThread()
 	tcp_connection.Listen();
 	DEBUG_MSG("tcp listen" << std::endl);
 	tcp_connection.Exit();
-	DEBUG_MSG("tcp start" << std::endl);
+	DEBUG_MSG("tcp exit" << std::endl);
 	Sleep(10);
 	return 0;
 }
@@ -178,7 +178,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastIp = tcp_connection.CastIp();
 			if (CastIp && IpCheck)
 			{
-				input_simulator.SendKeyOrMouseWithoutMove(IpHotkey);
+				input_simulator.SendKeyOrMouse(IpHotkey);
 				Sleep(100);
 			}
 
@@ -186,7 +186,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastWc = tcp_connection.CastWc();
 			if (CastWc && WcCheck)
 			{
-				input_simulator.SendKeyOrMouseWithoutMove(WcHotkey);
+				input_simulator.SendKeyOrMouse(WcHotkey);
 				Sleep(100);
 			}
 
@@ -194,7 +194,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastFalter = tcp_connection.CastFalter();
 			if (CastFalter && FalterCheck)
 			{
-				input_simulator.SendKeyOrMouseWithoutMove(FalterHotkey);
+				input_simulator.SendKeyOrMouse(FalterHotkey);
 				Sleep(100);
 			}
 
@@ -202,7 +202,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastBerserker = tcp_connection.CastBerserker();
 			if (CastBerserker && BerserkerCheck)
 			{
-				input_simulator.SendKeyOrMouseWithoutMove(BerserkerHotkey);
+				input_simulator.SendKeyOrMouse(BerserkerHotkey);
 				Sleep(100);
 			}
 
@@ -210,7 +210,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastSprint = tcp_connection.CastSprint();
 			if (CastSprint && SprintCheck)
 			{
-				input_simulator.SendKeyOrMouseWithoutMove(SprintHotkey);
+				input_simulator.SendKeyOrMouse(SprintHotkey);
 				Sleep(100);
 			}
 		}
@@ -221,15 +221,13 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastEpiphany = tcp_connection.CastEpiphany();
 			if (CastEpiphany && EpiphanyCheck)
 			{
-				input_simulator.SendKeyOrMouseWithoutMove(EpiphanyHotkey);
+				input_simulator.SendKeyOrMouse(EpiphanyHotkey);
 				Sleep(100);
 			}
 
 			//Mantra of healing
 			bool CastMantraHealing = tcp_connection.CastMantraHealing();
-			bool ShiftPressed = GetAsyncKeyState(VK_SHIFT);
-			bool SpacePressed = GetAsyncKeyState(VK_SPACE);
-			if (CastMantraHealing && MantraHealingCheck && (ShiftPressed || SpacePressed))
+			if (CastMantraHealing && MantraHealingCheck)
 			{
 				input_simulator.SendKeyOrMouseWithoutMove(MantraHealingHotkey);
 				Sleep(100);
@@ -239,7 +237,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastSweepingWind = tcp_connection.CastSweepingWind();
 			if (CastSweepingWind && SweepingWindCheck)
 			{
-				input_simulator.SendKeyOrMouseWithoutMove(SweepingWindHotkey);
+				input_simulator.SendKeyOrMouse(SweepingWindHotkey);
 				Sleep(100);
 			}
 
@@ -247,7 +245,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastBoh = tcp_connection.CastBoh();
 			if (CastBoh && BohCheck)
 			{
-				input_simulator.SendKeyOrMouseWithoutMove(BohHotkey);
+				input_simulator.SendKeyOrMouse(BohHotkey);
 				Sleep(100);
 			}
 
@@ -255,7 +253,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastMantraConviction = tcp_connection.CastMantraConviction();
 			if (CastMantraConviction && (GetTickCount() - 3000 >= ConvictionDuration) && MantraConvictionCheck)
 			{
-				input_simulator.SendKeyOrMouseWithoutMove(MantraConvictionHotkey);
+				input_simulator.SendKeyOrMouse(MantraConvictionHotkey);
 				ConvictionDuration = GetTickCount();
 				Sleep(100);
 			}
@@ -265,24 +263,11 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 		{
 			//Land of the Dead
 			bool CastLotd = tcp_connection.CastLotd();
-			bool RiftJustStarted = tcp_connection.RiftJustStarted();
-			if (SecondSim)
+			if (CastLotd && LotdCheck)
 			{
-				if (CastLotd && LotdCheck && !RiftJustStarted)
-				{
-					input_simulator.SendKeyOrMouse(LotdHotkey);
-					Sleep(100);
-				}
+				input_simulator.SendKeyOrMouse(LotdHotkey);
+				Sleep(100);
 			}
-			else
-			{
-				if (CastLotd && LotdCheck)
-				{
-					input_simulator.SendKeyOrMouse(LotdHotkey);
-					Sleep(100);
-				}
-			}
-
 
 			//Bone Armor
 			bool CastBoneArmor = tcp_connection.CastBoneArmor();
@@ -312,12 +297,12 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 
 			//Similacrum
 			bool CastSim = tcp_connection.CastSim();
-			RiftJustStarted = tcp_connection.RiftJustStarted();
+			bool DontCastSim = tcp_connection.DontCastSim();
 			if (SecondSim)
 			{
-				if (CastSim && SimCheck && !RiftJustStarted)
+				if (CastSim && SimCheck && !DontCastSim)
 				{
-					input_simulator.SendKeyOrMouseWithoutMove(SimHotkey);
+					input_simulator.SendKeyOrMouse(SimHotkey);
 					Sleep(100);
 				}
 			}
@@ -325,11 +310,18 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			{
 				if (CastSim && SimCheck)
 				{
-					input_simulator.SendKeyOrMouseWithoutMove(SimHotkey);
+					input_simulator.SendKeyOrMouse(SimHotkey);
 					Sleep(100);
 				}
 			}
-			
+
+			//blood nova
+			bool CastBloodNova = tcp_connection.CastBloodNova();
+			if (CastBloodNova && BloodNovaCheck)
+			{
+				input_simulator.SendKeyOrMouseWithoutMove(BloodNovaHotkey);
+				Sleep(100);
+			}
 		}
 
 		if (tcp_connection.ImWizard())
@@ -350,11 +342,19 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 				Sleep(100);
 			}
 
-			//Magic Weapon
+			//Arcane Blast
 			bool CastArcaneBlast = tcp_connection.CastArcaneBlast();
 			if (CastArcaneBlast && ArcaneBlastCheck)
 			{
 				input_simulator.SendKeyOrMouseWithoutMove(ArcaneBlastHotkey);
+				Sleep(100);
+			}
+
+			//Explosive Blast
+			bool CastExplosiveBlast = tcp_connection.CastExplosiveBlast();
+			if (CastExplosiveBlast && ExplosiveBlastCheck)
+			{
+				input_simulator.SendKeyOrMouseWithoutMove(ExplosiveBlastHotkey);
 				Sleep(100);
 			}
 		}
@@ -512,12 +512,12 @@ DWORD CDiabloCalcFancyDlg::HexingMacroThread()
 			Sleep(100);
 			continue;
 		}
-		if (!tcp_connection.ImNecro())
+		/*if (!tcp_connection.ImNecro())
 		{
 			SwitchToThread();
 			Sleep(1000);
 			continue;
-		}
+		}*/
 		if (!Hexing)
 		{
 			SwitchToThread();
@@ -801,6 +801,11 @@ BOOL CDiabloCalcFancyDlg::OnInitDialog()
 	else m_ctlARCHONCHECK.SetCheck(BST_UNCHECKED);
 	if (checks[26] == '1') { m_ctlARCANEBLASTCHECK.SetCheck(BST_CHECKED); }
 	else m_ctlARCANEBLASTCHECK.SetCheck(BST_UNCHECKED);
+	if (checks[27] == '1') { m_ctlEXPLOSIVEBLASTCHECK.SetCheck(BST_CHECKED); }
+	else m_ctlEXPLOSIVEBLASTCHECK.SetCheck(BST_UNCHECKED);
+	if (checks[28] == '1') { m_ctlBLOODNOVACHECK.SetCheck(BST_CHECKED); }
+	else m_ctlBLOODNOVACHECK.SetCheck(BST_UNCHECKED);
+
 
 	m_ctlMACROACTIVE.SetCheck(BST_UNCHECKED);
 
@@ -870,6 +875,27 @@ BOOL CDiabloCalcFancyDlg::OnInitDialog()
 	m_ctlARCHONHOTKEY.SetWindowText(str);
 	str[0] = hotkeys[30];
 	m_ctlARCANEBLASTHOTKEY.SetWindowText(str);
+	str[0] = hotkeys[31];
+	m_ctlEXPLOSIVEBLASTHOTKEY.SetWindowText(str);
+	str[0] = hotkeys[32];
+	m_ctlBLOODNOVAHOTKEY.SetWindowText(str);
+	str[0] = hotkeys[33];
+	if (hotkeys[34] == (wchar_t)SpecialHotkey::Key)//Letter (a-z) or number (0-9)
+	{
+		m_ctlFORCESTANDSTILLHOTKEY.SetWindowText(str);
+	}
+	else if (hotkeys[34] == (wchar_t)SpecialHotkey::Shift)
+	{
+		m_ctlFORCESTANDSTILLHOTKEY.SetWindowText(L"Shift");
+	}
+	else if (hotkeys[34] == (wchar_t)SpecialHotkey::Alt)
+	{
+		m_ctlFORCESTANDSTILLHOTKEY.SetWindowText(L"Alt");
+	}
+	else if (hotkeys[34] == (wchar_t)SpecialHotkey::Space)
+	{
+		m_ctlFORCESTANDSTILLHOTKEY.SetWindowText(L"Space");
+	}
 	return TRUE;
 }
 
@@ -912,6 +938,8 @@ BEGIN_MESSAGE_MAP(CDiabloCalcFancyDlg, CDialog)
 	ON_BN_CLICKED(IDC_HEXING, Update)
 	ON_BN_CLICKED(IDC_ARCHONECHECK, Update)
 	ON_BN_CLICKED(IDC_ARCANEBLASTCHECK, Update)
+	ON_BN_CLICKED(IDC_EXPLOSIVEBLASTCHECK, Update)
+	ON_BN_CLICKED(IDC_BLOODNOVACHECK, Update)
 
 	ON_EN_CHANGE(IDC_IPHOTKEY, Update)
 	ON_EN_CHANGE(IDC_WCHOTKEY, Update)
@@ -941,6 +969,9 @@ BEGIN_MESSAGE_MAP(CDiabloCalcFancyDlg, CDialog)
 	ON_EN_CHANGE(IDC_SIMHOTKEY, Update)
 	ON_EN_CHANGE(IDC_ARCHONHOTKEY, Update)
 	ON_EN_CHANGE(IDC_ARCANEBLASTHOTKEY, Update)
+	ON_EN_CHANGE(IDC_EXPLOSIVEBLASTHOTKEY, Update)
+	ON_EN_CHANGE(IDC_BLOODNOVAHOTKEY, Update)
+	ON_EN_CHANGE(IDC_FORCESTANDSTILLHOTKEY, Update)
 
 	ON_EN_CHANGE(IDC_MACROHOTKEY, Update)
 	ON_EN_CHANGE(IDC_TIMINGKEY, Update)
@@ -983,6 +1014,8 @@ void CDiabloCalcFancyDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_HEXING, m_ctlHEXING);
 	DDX_Control(pDX, IDC_ARCHONECHECK, m_ctlARCHONCHECK);
 	DDX_Control(pDX, IDC_ARCANEBLASTCHECK, m_ctlARCANEBLASTCHECK);
+	DDX_Control(pDX, IDC_EXPLOSIVEBLASTCHECK, m_ctlEXPLOSIVEBLASTCHECK);
+	DDX_Control(pDX, IDC_BLOODNOVACHECK, m_ctlBLOODNOVACHECK);
 
 	DDX_Control(pDX, IDC_IPHOTKEY, m_ctlIPHOTKEY);
 	DDX_Control(pDX, IDC_WCHOTKEY, m_ctlWCHOTKEY);
@@ -1015,6 +1048,9 @@ void CDiabloCalcFancyDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_SIMHOTKEY, m_ctlSIMHOTKEY);
 	DDX_Control(pDX, IDC_ARCHONHOTKEY, m_ctlARCHONHOTKEY);
 	DDX_Control(pDX, IDC_ARCANEBLASTHOTKEY, m_ctlARCANEBLASTHOTKEY);
+	DDX_Control(pDX, IDC_EXPLOSIVEBLASTHOTKEY, m_ctlEXPLOSIVEBLASTHOTKEY);
+	DDX_Control(pDX, IDC_BLOODNOVAHOTKEY, m_ctlBLOODNOVAHOTKEY);
+	DDX_Control(pDX, IDC_FORCESTANDSTILLHOTKEY, m_ctlFORCESTANDSTILLHOTKEY);
 
 	DDX_Control(pDX, IDC_UPPERBOUND, m_ctlUPPERBOUND);
 	DDX_Control(pDX, IDC_LOWERBOUND, m_ctlLOWERBOUND);
@@ -1061,6 +1097,8 @@ void CDiabloCalcFancyDlg::Update()
 	Hexing = m_ctlHEXING.GetCheck();
 	ArchonCheck = m_ctlARCHONCHECK.GetCheck();
 	ArcaneBlastCheck = m_ctlARCANEBLASTCHECK.GetCheck();
+	ExplosiveBlastCheck = m_ctlEXPLOSIVEBLASTCHECK.GetCheck();
+	BloodNovaCheck = m_ctlBLOODNOVACHECK.GetCheck();
 
 	wiz_macro.BlackholeCheck = BlackholeCheck;
 	wiz_macro.ArchonCheck = ArchonCheck;
@@ -1468,6 +1506,32 @@ void CDiabloCalcFancyDlg::Update()
 		ArcaneBlastHotkey = ' ';
 	}
 
+	len = m_ctlEXPLOSIVEBLASTHOTKEY.LineLength(m_ctlEXPLOSIVEBLASTHOTKEY.LineIndex(0));
+	if (len > 0)
+	{
+		buffer = strText.GetBuffer(len);
+		m_ctlEXPLOSIVEBLASTHOTKEY.GetLine(0, buffer, len);
+		ExplosiveBlastHotkey = strText[0];
+		strText.ReleaseBuffer(len);
+	}
+	else
+	{
+		ExplosiveBlastHotkey = ' ';
+	}
+
+	len = m_ctlBLOODNOVAHOTKEY.LineLength(m_ctlBLOODNOVAHOTKEY.LineIndex(0));
+	if (len > 0)
+	{
+		buffer = strText.GetBuffer(len);
+		m_ctlBLOODNOVAHOTKEY.GetLine(0, buffer, len);
+		BloodNovaHotkey = strText[0];
+		strText.ReleaseBuffer(len);
+	}
+	else
+	{
+		BloodNovaHotkey = ' ';
+	}
+
 	wiz_macro.WaveOfForceHotkey = WaveOfForceHotkey;
 	wiz_macro.ElectrocuteHotkey = ElectrocuteHotkey;
 	wiz_macro.MeteorHotkey = MeteorHotkey;
@@ -1475,6 +1539,46 @@ void CDiabloCalcFancyDlg::Update()
 	wiz_macro.BlackholeHotkey = BlackholeHotkey;
 	wiz_macro.MacroHotkey = MacroHotkey;
 	wiz_macro.ArchonHotkey = ArchonHotkey;
+
+
+	len = m_ctlFORCESTANDSTILLHOTKEY.LineLength(m_ctlFORCESTANDSTILLHOTKEY.LineIndex(0));
+	if (len > 0)
+	{
+		buffer = strText.GetBuffer(len);
+		m_ctlFORCESTANDSTILLHOTKEY.GetLine(0, buffer, len);
+		buffer[len] = 0;
+		if (strText == L"Shift" || strText == L"shift")
+		{
+			ForceStandStillHotkey = '0';
+			ForceStandStillSpecialHotkey = (wchar_t)SpecialHotkey::Shift;
+			input_simulator.ForceStandStill = VK_SHIFT;
+		}
+		else if (strText == L"Alt" || strText == L"alt")
+		{
+			ForceStandStillHotkey = '0';
+			ForceStandStillSpecialHotkey = (wchar_t)SpecialHotkey::Alt;
+			input_simulator.ForceStandStill = VK_MENU;
+		}
+		else if (strText == L"Space" || strText == L"space")
+		{
+			ForceStandStillHotkey = '0';
+			ForceStandStillSpecialHotkey = (wchar_t)SpecialHotkey::Space;
+			input_simulator.ForceStandStill = VK_SPACE;
+		}
+		else
+		{
+			ForceStandStillHotkey = strText[0];
+			ForceStandStillSpecialHotkey = (wchar_t)SpecialHotkey::Key;
+			input_simulator.ForceStandStill = input_simulator.CharToVK(strText[0]);
+		}
+		strText.ReleaseBuffer(len);
+	}
+	else
+	{
+		ForceStandStillHotkey = '0';
+		ForceStandStillSpecialHotkey = (wchar_t)SpecialHotkey::Shift;
+	}
+
 
 	std::wstring checks;
 	std::wstring hotkeys;
@@ -1533,6 +1637,10 @@ void CDiabloCalcFancyDlg::Update()
 	else checks += '0';
 	if (ArcaneBlastCheck) checks += '1';
 	else checks += '0';
+	if (ExplosiveBlastCheck) checks += '1';
+	else checks += '0';
+	if (BloodNovaCheck) checks += '1';
+	else checks += '0';
 
 	hotkeys += IpHotkey;
 	hotkeys += WcHotkey;
@@ -1565,6 +1673,10 @@ void CDiabloCalcFancyDlg::Update()
 	hotkeys += SimHotkey;
 	hotkeys += ArchonHotkey;
 	hotkeys += ArcaneBlastHotkey;
+	hotkeys += ExplosiveBlastHotkey;
+	hotkeys += BloodNovaHotkey;
+	hotkeys += ForceStandStillHotkey;
+	hotkeys += ForceStandStillSpecialHotkey;
 
 	std::wofstream file;
 	file.open(_T("config.cfg"), std::wofstream::out | std::wofstream::trunc);

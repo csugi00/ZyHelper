@@ -10,6 +10,7 @@ InputSimulator::InputSimulator()
 	MouseMoveState = false;
 	LastCursorPos.x = 0;
 	LastCursorPos.y = 0;
+	ForceStandStill = VK_SHIFT;
 }
 
 
@@ -47,32 +48,83 @@ int InputSimulator::CharToVK(wchar_t input)
 	case '9':
 		return 0x39;
 		break;
-	case 'q':
-		return 0x51;
-		break;
-	case 'w':
-		return 0x57;
-		break;
-	case 'e':
-		return 0x45;
-		break;
-	case 'r':
-		return 0x52;
-		break;
 	case 'a':
 		return 0x41;
 		break;
-	case 's':
-		return 0x53;
+	case 'b':
+		return 0x42;
+		break;
+	case 'c':
+		return 0x43;
 		break;
 	case 'd':
 		return 0x44;
 		break;
+	case 'e':
+		return 0x45;
+		break;
 	case 'f':
 		return 0x46;
 		break;
+	case 'g':
+		return 0x47;
+		break;
+	case 'h':
+		return 0x48;
+		break;
+	case 'i':
+		return 0x49;
+		break;
+	case 'j':
+		return 0x4A;
+		break;
+	case 'k':
+		return 0x4B;
+		break;
+	case 'l':
+		return 0x4C;
+		break;
+	case 'm':
+		return 0x4D;
+		break;
+	case 'n':
+		return 0x4E;
+		break;
+	case 'o':
+		return 0x4F;
+		break;
+	case 'p':
+		return 0x50;
+		break;
+	case 'q':
+		return 0x51;
+		break;
+	case 'r':
+		return 0x52;
+		break;
+	case 's':
+		return 0x53;
+		break;
+	case 't':
+		return 0x54;
+		break;
 	case 'u':
 		return 0x55;
+		break;
+	case 'v':
+		return 0x56;
+		break;
+	case 'w':
+		return 0x57;
+		break;
+	case 'x':
+		return 0x58;
+		break;
+	case 'y':
+		return 0x59;
+		break;
+	case 'z':
+		return 0x5A;
 		break;
 	}
 	return 0;
@@ -182,60 +234,23 @@ void SendKeyUp(int key)
 
 void InputSimulator::SendMouse(MouseClick Click)
 {
-	INPUT ip;
+	HWND handle = ::GetForegroundWindow();
 
 	if (Click == Left)//hold force stand still
 	{
-		SendKeyDown(VK_SHIFT);
-	}
-
-	ZeroMemory(&ip, sizeof(ip));
-
-	//POINT CursorPos;
-	//GetCursorPos(&CursorPos);
-	Sleep(1);
-	//SetCursorPos(700, 500);
-	//Sleep(1);
-	ip.type = INPUT_MOUSE;
-	ip.mi.dx = 0;
-	ip.mi.dy = 0;
-	ip.mi.mouseData = 0;
-	ip.mi.time = 0;
-	ip.mi.dwExtraInfo = 0;
-
-	if (Click == Left)
-	{
-		ip.mi.dwFlags = MOUSEEVENTF_LEFTDOWN;
+		SendKeyDown(ForceStandStill);
+		Sleep(100);
+		PostMessage(handle, WM_LBUTTONDOWN, 1, (int)((500 << 16) | (700 & 0xFFFF)));
+		Sleep(1);
+		PostMessage(handle, WM_LBUTTONUP, 1, 0);
+		Sleep(100);
+		SendKeyUp(ForceStandStill);
 	}
 	else
 	{
-		ip.mi.dwFlags = MOUSEEVENTF_RIGHTDOWN;
-	}
-	SendInput(1, &ip, sizeof(INPUT));
-
-	Sleep(1);
-	ip.type = INPUT_MOUSE;
-	ip.mi.dx = 0;
-	ip.mi.dy = 0;
-	ip.mi.mouseData = 0;
-	ip.mi.time = 0;
-	ip.mi.dwExtraInfo = 0;
-	if (Click == Left)
-	{
-		ip.mi.dwFlags = MOUSEEVENTF_LEFTUP;
-	}
-	else
-	{
-		ip.mi.dwFlags = MOUSEEVENTF_RIGHTUP;
-	}
-	SendInput(1, &ip, sizeof(INPUT));
-	Sleep(1);
-	//SetCursorPos(CursorPos.x, CursorPos.y);
-	//Sleep(1);
-
-	if (Click == Left)//hold force stand still
-	{
-		SendKeyUp(VK_SHIFT);
+		PostMessage(handle, WM_RBUTTONDOWN, 1, (int)((500 << 16) | (700 & 0xFFFF)));
+		Sleep(1);
+		PostMessage(handle, WM_RBUTTONUP, 1, 0);
 	}
 }
 
@@ -245,7 +260,7 @@ void InputSimulator::SendMouseWithoutMove(MouseClick Click)
 
 	if (Click == Left)//hold force stand still
 	{
-		SendKeyDown(VK_SHIFT);
+		SendKeyDown(ForceStandStill);
 	}
 
 
@@ -294,7 +309,7 @@ void InputSimulator::SendMouseWithoutMove(MouseClick Click)
 
 	if (Click == Left)//hold force stand still
 	{
-		SendKeyUp(VK_SHIFT);
+		SendKeyUp(ForceStandStill);
 	}
 }
 
@@ -302,70 +317,28 @@ void InputSimulator::MoveMouse()
 {
 	if (GetAsyncKeyState(CharToVK('7'))) return;
 
-	INPUT ip;
-
-	ZeroMemory(&ip, sizeof(ip));
-
-	POINT CursorPos;
-	GetCursorPos(&CursorPos);
-
-	LONG dist1 = abs(CursorPos.x - 820) + abs(CursorPos.y - 507);
-	LONG dist2 = abs(CursorPos.x - 1100) + abs(CursorPos.y - 507);
-
-	if (dist1 <= 100 || dist2 <= 100)
-	{
-		CursorPos = LastCursorPos;
-	}
-
-	LastCursorPos = CursorPos;
 	Sleep(1);
-
+	HWND handle = ::GetForegroundWindow();
 	if (MouseMoveState)
 	{
-		SetCursorPos(820, 507);
+		Sleep(10);
+		PostMessage(handle, WM_MBUTTONDOWN, 1, (int)((507 << 16) | (820 & 0xFFFF)));
+		PostMessage(handle, WM_MBUTTONUP, 1, 0);
+		Sleep(10);
+		//SetCursorPos(820, 507);
 	}
 	else
 	{
-		SetCursorPos(1100, 507);
+		Sleep(10);
+		PostMessage(handle, WM_MBUTTONDOWN, 1, (int)((507 << 16) | (1100 & 0xFFFF)));
+		PostMessage(handle, WM_MBUTTONUP, 1, 0);
+		Sleep(10);
+		//SetCursorPos(1100, 507);
 	}
 
 	//Sleep(100);
 	Sleep(10);
 	MouseMoveState = !MouseMoveState;
-	
-	wchar_t ForceMove = TEXT('u');
-	//SendKey(ForceMove);
-
-
-	//////////////////////////////////////////////////////////
-
-	ZeroMemory(&ip, sizeof(ip));
-
-	Sleep(1);
-	ip.type = INPUT_MOUSE;
-	ip.mi.dx = 0;
-	ip.mi.dy = 0;
-	ip.mi.mouseData = WHEEL_DELTA;
-	ip.mi.time = 0;
-	ip.mi.dwExtraInfo = 0;
-	ip.mi.dwFlags = MOUSEEVENTF_WHEEL;
-	SendInput(1, &ip, sizeof(INPUT));
-
-	Sleep(1);
-	ip.type = INPUT_MOUSE;
-	ip.mi.dx = 0;
-	ip.mi.dy = 0;
-	ip.mi.mouseData = WHEEL_DELTA;
-	ip.mi.time = 0;
-	ip.mi.dwExtraInfo = 0;
-	ip.mi.dwFlags = MOUSEEVENTF_WHEEL;
-	SendInput(1, &ip, sizeof(INPUT));
-	////////////////////////////////////////////////
-	Sleep(1);
-
-	SetCursorPos(CursorPos.x, CursorPos.y);
-	Sleep(1);
-
 }
 
 InputSimulator::~InputSimulator()
