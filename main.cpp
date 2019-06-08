@@ -99,6 +99,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 	DWORD ActiveDuration = GetTickCount();
 	DWORD ResetDuration = GetTickCount();
 	DWORD AutoMacroDuration = GetTickCount();
+	DWORD PositionDuration = GetTickCount();
 
 	while (true)
 	{
@@ -119,6 +120,22 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			wiz_macro.LowerBound = 32000;
 			wiz_macro.UpperBound = 32000;
 			DEBUG_MSG("RESET" << std::endl);
+		}
+
+		if (GetAsyncKeyState(input_simulator.CharToVK(PositionHotkey)) && (GetTickCount() - 500 >= PositionDuration))
+		{
+			POINT p;
+			GetCursorPos(&p);
+			::ScreenToClient(::GetForegroundWindow(), &p);
+			wiz_macro.SavedPosition = p;
+			PositionDuration = GetTickCount();
+			wiz_macro.PositionSaved = true;
+			m_ctlPOSITIONSAVED.SetCheck(BST_CHECKED);
+			DEBUG_MSG("Position saved" << std::endl);
+		}
+		if (!wiz_macro.PositionSaved)
+		{
+			m_ctlPOSITIONSAVED.SetCheck(BST_UNCHECKED);
 		}
 
 		if (tcp_connection.IsReady())
@@ -178,7 +195,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastIp = tcp_connection.CastIp();
 			if (CastIp && IpCheck)
 			{
-				input_simulator.SendKeyOrMouse(IpHotkey);
+				input_simulator.SendKeyOrMouseWithoutMove(IpHotkey);
 				Sleep(100);
 			}
 
@@ -186,7 +203,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastWc = tcp_connection.CastWc();
 			if (CastWc && WcCheck)
 			{
-				input_simulator.SendKeyOrMouse(WcHotkey);
+				input_simulator.SendKeyOrMouseWithoutMove(WcHotkey);
 				Sleep(100);
 			}
 
@@ -194,7 +211,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastFalter = tcp_connection.CastFalter();
 			if (CastFalter && FalterCheck)
 			{
-				input_simulator.SendKeyOrMouse(FalterHotkey);
+				input_simulator.SendKeyOrMouseWithoutMove(FalterHotkey);
 				Sleep(100);
 			}
 
@@ -202,7 +219,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastBerserker = tcp_connection.CastBerserker();
 			if (CastBerserker && BerserkerCheck)
 			{
-				input_simulator.SendKeyOrMouse(BerserkerHotkey);
+				input_simulator.SendKeyOrMouseWithoutMove(BerserkerHotkey);
 				Sleep(100);
 			}
 
@@ -210,11 +227,10 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastSprint = tcp_connection.CastSprint();
 			if (CastSprint && SprintCheck)
 			{
-				input_simulator.SendKeyOrMouse(SprintHotkey);
+				input_simulator.SendKeyOrMouseWithoutMove(SprintHotkey);
 				Sleep(100);
 			}
 		}
-
 		if (tcp_connection.ImMonk())
 		{
 			//Epiphany
@@ -245,7 +261,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastBoh = tcp_connection.CastBoh();
 			if (CastBoh && BohCheck)
 			{
-				input_simulator.SendKeyOrMouse(BohHotkey);
+				input_simulator.SendKeyOrMouseWithoutMove(BohHotkey);
 				Sleep(100);
 			}
 
@@ -258,15 +274,26 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 				Sleep(100);
 			}
 		}
-
 		if (tcp_connection.ImNecro())
 		{
 			//Land of the Dead
 			bool CastLotd = tcp_connection.CastLotd();
-			if (CastLotd && LotdCheck)
+			bool DontCastLand = tcp_connection.DontCastLand();
+			if (SecondSim)
 			{
-				input_simulator.SendKeyOrMouse(LotdHotkey);
-				Sleep(100);
+				if (CastLotd && LotdCheck && !DontCastLand)
+				{
+					input_simulator.SendKeyOrMouseWithoutMove(LotdHotkey);
+					Sleep(100);
+				}
+			}
+			else//first sim
+			{
+				if (CastLotd && LotdCheck)
+				{
+					input_simulator.SendKeyOrMouseWithoutMove(LotdHotkey);
+					Sleep(100);
+				}
 			}
 
 			//Bone Armor
@@ -279,14 +306,15 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 
 			//Skeletal Mages
 			bool CastSkeleMages = tcp_connection.CastSkeleMages();
+			bool InARift = tcp_connection.InARift();
 			if (CastSkeleMages && SkeleMageCheck)
 			{
 				input_simulator.SendKeyOrMouseWithoutMove(SkeleMageHotkey);
-				Sleep(100);
-				if (Hexing)
+				if (Hexing && InARift)
 				{
 					input_simulator.MoveMouse();
 				}
+				Sleep(100);
 			}
 			//devour
 			if (DevourCheck)
@@ -302,7 +330,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			{
 				if (CastSim && SimCheck && !DontCastSim)
 				{
-					input_simulator.SendKeyOrMouse(SimHotkey);
+					input_simulator.SendKeyOrMouseWithoutMove(SimHotkey);
 					Sleep(100);
 				}
 			}
@@ -310,7 +338,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			{
 				if (CastSim && SimCheck)
 				{
-					input_simulator.SendKeyOrMouse(SimHotkey);
+					input_simulator.SendKeyOrMouseWithoutMove(SimHotkey);
 					Sleep(100);
 				}
 			}
@@ -323,7 +351,6 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 				Sleep(100);
 			}
 		}
-
 		if (tcp_connection.ImWizard())
 		{
 			//Storm Armor
@@ -338,7 +365,7 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 			bool CastMagicWeapon = tcp_connection.CastMagicWeapon();
 			if (CastMagicWeapon && MagicWeaponCheck)
 			{
-				input_simulator.SendKeyOrMouseWithoutMove(MagicWeaponHotkey);
+				input_simulator.SendKeyOrMouse(MagicWeaponHotkey);
 				Sleep(100);
 			}
 
@@ -358,7 +385,6 @@ DWORD CDiabloCalcFancyDlg::DoLogicThread()
 				Sleep(100);
 			}
 		}
-
 		if (tcp_connection.ImDh())
 		{
 			//Vengeance
@@ -518,7 +544,7 @@ DWORD CDiabloCalcFancyDlg::HexingMacroThread()
 			Sleep(1000);
 			continue;
 		}*/
-		if (!Hexing)
+		if (!Hexing || !tcp_connection.InARift())
 		{
 			SwitchToThread();
 			Sleep(100);
@@ -896,6 +922,8 @@ BOOL CDiabloCalcFancyDlg::OnInitDialog()
 	{
 		m_ctlFORCESTANDSTILLHOTKEY.SetWindowText(L"Space");
 	}
+	str[0] = hotkeys[35];
+	m_ctlPOSITIONHOTKEY.SetWindowText(str);
 	return TRUE;
 }
 
@@ -972,6 +1000,7 @@ BEGIN_MESSAGE_MAP(CDiabloCalcFancyDlg, CDialog)
 	ON_EN_CHANGE(IDC_EXPLOSIVEBLASTHOTKEY, Update)
 	ON_EN_CHANGE(IDC_BLOODNOVAHOTKEY, Update)
 	ON_EN_CHANGE(IDC_FORCESTANDSTILLHOTKEY, Update)
+	ON_EN_CHANGE(IDC_POSITIONHOTKEY, Update)
 
 	ON_EN_CHANGE(IDC_MACROHOTKEY, Update)
 	ON_EN_CHANGE(IDC_TIMINGKEY, Update)
@@ -986,6 +1015,7 @@ void CDiabloCalcFancyDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_ACTIVE, m_ctlACTIVE);
 	DDX_Control(pDX, IDC_ACTIVERUNNING, m_ctlACTIVERUNNING);
 	DDX_Control(pDX, IDC_MACROACTIVE, m_ctlMACROACTIVE);
+	DDX_Control(pDX, IDC_POSITIONSAVED, m_ctlPOSITIONSAVED);
 
 	DDX_Control(pDX, IDC_IPCHECK, m_ctlIPCHECK);
 	DDX_Control(pDX, IDC_WCCHECK, m_ctlWCCHECK);
@@ -1051,6 +1081,7 @@ void CDiabloCalcFancyDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_EXPLOSIVEBLASTHOTKEY, m_ctlEXPLOSIVEBLASTHOTKEY);
 	DDX_Control(pDX, IDC_BLOODNOVAHOTKEY, m_ctlBLOODNOVAHOTKEY);
 	DDX_Control(pDX, IDC_FORCESTANDSTILLHOTKEY, m_ctlFORCESTANDSTILLHOTKEY);
+	DDX_Control(pDX, IDC_POSITIONHOTKEY, m_ctlPOSITIONHOTKEY);
 
 	DDX_Control(pDX, IDC_UPPERBOUND, m_ctlUPPERBOUND);
 	DDX_Control(pDX, IDC_LOWERBOUND, m_ctlLOWERBOUND);
@@ -1531,6 +1562,18 @@ void CDiabloCalcFancyDlg::Update()
 	{
 		BloodNovaHotkey = ' ';
 	}
+	len = m_ctlPOSITIONHOTKEY.LineLength(m_ctlPOSITIONHOTKEY.LineIndex(0));
+	if (len > 0)
+	{
+		buffer = strText.GetBuffer(len);
+		m_ctlPOSITIONHOTKEY.GetLine(0, buffer, len);
+		PositionHotkey = strText[0];
+		strText.ReleaseBuffer(len);
+	}
+	else
+	{
+		PositionHotkey = ' ';
+	}
 
 	wiz_macro.WaveOfForceHotkey = WaveOfForceHotkey;
 	wiz_macro.ElectrocuteHotkey = ElectrocuteHotkey;
@@ -1677,6 +1720,7 @@ void CDiabloCalcFancyDlg::Update()
 	hotkeys += BloodNovaHotkey;
 	hotkeys += ForceStandStillHotkey;
 	hotkeys += ForceStandStillSpecialHotkey;
+	hotkeys += PositionHotkey;
 
 	std::wofstream file;
 	file.open(_T("config.cfg"), std::wofstream::out | std::wofstream::trunc);
